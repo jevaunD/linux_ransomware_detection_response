@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-score.py
+
+respond.py
 
 Reads CSV event lines from bpftrace (via stdin) in the form:
     EVENT_TYPE,PID,COMM,PATH,TIMESTAMP_NS
@@ -37,7 +38,7 @@ last_alert = {}
 COMM_DENYLIST_PATTERNS = [
 
 	"gnome-shel", "flameshot","Xorg","systemd", "system76-schedu",
-	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", "MemoryInfra", 
+	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", "MemoryInfra", "Cache2 I/O", "ThreadPoolForeg"  
 ]
 
 #This gets rid of the false positives as some processes manipulate many files just as how ransomware does.
