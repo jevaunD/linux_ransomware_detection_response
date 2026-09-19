@@ -37,7 +37,7 @@ last_alert = {}
 COMM_DENYLIST_PATTERNS = [
 
 	"gnome-shel", "flameshot","Xorg","systemd", "system76-schedu",
-	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", 
+	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", "MemoryInfra", 
 ]
 
 #This gets rid of the false positives as some processes manipulate many files just as how ransomware does.
