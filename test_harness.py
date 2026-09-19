@@ -19,7 +19,7 @@ import sys
 import time
 import tempfile
 
-FILE_COUNT = 150
+FILE_COUNT = 200
 
 
 def make_test_dir():

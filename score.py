@@ -20,7 +20,7 @@ from collections import defaultdict, deque
 
 # --- Tunable parameters (start here when iterating) ---------------------
 WINDOW_SECONDS = 5          # sliding window size
-THRESHOLD = 100               # weighted score that triggers an alert
+THRESHOLD = 200               # weighted score that triggers an alert
 WEIGHTS = {                  # rename/delete are stronger ransomware signals
     "OPEN": 1,
     "RENAME": 4,
