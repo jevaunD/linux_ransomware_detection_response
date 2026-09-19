@@ -23,7 +23,8 @@ FILE_COUNT = 150
 
 
 def make_test_dir():
-    d = tempfile.mkdtemp(prefix="ransim_")
+    #d = tempfile.mkdtemp(prefix="ransim_")
+    d = "~/harness_dir"
     for i in range(FILE_COUNT):
         with open(os.path.join(d, f"file_{i}.txt"), "w") as f:
             f.write("sample content\n" * 10)
