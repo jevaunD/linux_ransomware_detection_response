@@ -24,7 +24,9 @@
  * done here) just avoid BEGIN/END blocks entirely.
  */
 
+
 tracepoint:syscalls:sys_enter_openat
+/ (args-> flags & 0x3) != 0 /
 {
     printf("OPEN,%d,%s,%s,%llu\n", pid, comm, str(args->filename), nsecs);
 }

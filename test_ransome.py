@@ -59,6 +59,7 @@ def benign_run(d):
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "malicious"
     test_dir = make_test_dir()
+    time.sleep(6)
     if mode == "benign":
         benign_run(test_dir)
     else:

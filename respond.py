@@ -19,8 +19,8 @@ import time
 from collections import defaultdict, deque
 
 # --- Tunable parameters (start here when iterating) ---------------------
-WINDOW_SECONDS = 5          # sliding window size
-THRESHOLD = 200               # weighted score that triggers an alert
+WINDOW_SECONDS = 3          # sliding window size
+THRESHOLD = 50               # weighted score that triggers an alert
 WEIGHTS = {                  # rename/delete are stronger ransomware signals
     "OPEN": 1,
     "RENAME": 4,
@@ -34,6 +34,15 @@ events_by_pid = defaultdict(deque)
 # pid -> last alert time, to avoid alert spam
 last_alert = {}
 
+COMM_DENYLIST_PATTERNS = [
+
+	"gnome-shel", "flameshot","Xorg","systemd", "system76-schedu",
+	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", 
+]
+
+#This gets rid of the false positives as some processes manipulate many files just as how ransomware does.
+def is_denylisted(comm):
+	return any(pattern in comm for pattern in COMM_DENYLIST_PATTERNS)
 
 def prune_and_score(pid, now):
     dq = events_by_pid[pid]
@@ -71,7 +80,7 @@ def main():
 
         score, count = prune_and_score(pid, now)
 
-        if score >= THRESHOLD:
+        if score >= THRESHOLD and not is_denylisted(comm):
             last = last_alert.get(pid, 0)
             if now - last >= COOLDOWN_SECONDS:
                 last_alert[pid] = now
