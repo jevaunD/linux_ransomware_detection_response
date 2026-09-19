@@ -1,0 +1,40 @@
+#!/usr/bin/env bpftrace
+/*
+ * ransomware_trace.bt
+ *
+ * Traces file open (write-relevant), rename, and delete syscalls
+ * system-wide and emits one CSV line per event to stdout:
+ *
+ *   EVENT_TYPE,PID,COMM,PATH,TIMESTAMP_NS
+ *
+ * Pipe this into score.py for aggregation and scoring:
+ *   sudo bpftrace ransomware_trace.bt | python3 score.py
+ *
+ * NOTE: field names (args->filename, args->oldname, args->pathname)
+ * can vary slightly by kernel version. Verify with:
+ *   sudo bpftrace -lv tracepoint:syscalls:sys_enter_openat
+ * before relying on this.
+ *
+ * NOTE: this script intentionally has no BEGIN block. Many
+ * distro-packaged bpftrace binaries are stripped of symbols, which
+ * breaks BEGIN/END probes with:
+ *   ERROR: Could not resolve symbol: /proc/self/exe:BEGIN_trigger
+ * See: https://github.com/bpftrace/bpftrace/issues/954
+ * Fix options: install bpftrace-dbgsym, downgrade bpftrace, or (as
+ * done here) just avoid BEGIN/END blocks entirely.
+ */
+
+tracepoint:syscalls:sys_enter_openat
+{
+    printf("OPEN,%d,%s,%s,%llu\n", pid, comm, str(args->filename), nsecs);
+}
+
+tracepoint:syscalls:sys_enter_renameat2
+{
+    printf("RENAME,%d,%s,%s,%llu\n", pid, comm, str(args->oldname), nsecs);
+}
+
+tracepoint:syscalls:sys_enter_unlinkat
+{
+    printf("DELETE,%d,%s,%s,%llu\n", pid, comm, str(args->pathname), nsecs);
+}
