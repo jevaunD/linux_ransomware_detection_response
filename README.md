@@ -31,7 +31,10 @@ warning above: sandbox only.
   
 ## What it does
 
-- Watches for [what gets flagged: suspicious behavior, specific processes, etc.]
+- Watches for ransomware-like behavior in real time: processes that rapidly
+  read, write, and modify files, the way encryption-style malware does. It
+  goes by what a process *does*, not what it's called, so it doesn't need a
+  list of known bad programs.
 - Sends `SIGSTOP` to pause the flagged process (fully reversible)
 - Logs every decision to `actions.log`, including the ones it skipped
 
