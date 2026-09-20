@@ -77,7 +77,9 @@ sudo ./ransomware_trace.bt | python3 respond.py
 #Run ransomware simulation program (ransomware_sim.py or rans.sh)
 
 python3 ransomware_sim.py
+
 OR
+
 bash rans.sh
 
 ```
