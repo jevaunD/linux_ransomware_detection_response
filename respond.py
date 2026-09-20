@@ -6,23 +6,22 @@ respond.py
 Reads CSV event lines from bpftrace (via stdin) in the form:
     EVENT_TYPE,PID,COMM,PATH,TIMESTAMP_NS
 
-Aggregates events per PID over a sliding time window (adjustable) and raises an
+Aggregates events per-PID over a sliding time window and raises an
 alert when a process's weighted event score crosses a threshold in
-that window.
-
-The classic ransomware signature of "many file
-open -> rename -> delete operations in rapid succession."
+that window -- the classic ransomware signature of "many file
+open/rename/delete operations in rapid succession."
 
 Usage:
     sudo bpftrace ransomware_trace.bt | python3 score.py
 """
+from datetime import datetime
 import signal
 import os
 import sys
 import time
 from collections import defaultdict, deque
 
-# --- Adjustable parameters ---------------------
+# --- Tunable parameters (start here when iterating) ---------------------
 WINDOW_SECONDS = 5          # sliding window size
 THRESHOLD = 50               # weighted score that triggers an alert
 WEIGHTS = {                  # rename/delete are stronger ransomware signals
@@ -30,7 +29,7 @@ WEIGHTS = {                  # rename/delete are stronger ransomware signals
     "RENAME": 4,
     "DELETE": 4,
 }
-COOLDOWN_SECONDS = 10         # don't send alert on the same pid immediately
+COOLDOWN_SECONDS = 10         # don't re-alert on the same pid immediately
 # --------------------------------------------------------------------
 
 # pid -> deque of (timestamp, weight, event_type)
@@ -62,16 +61,42 @@ def event_breakdown(pid):
         counts[etype] += 1
     return dict(counts)
 
+
+
+PID_FLOOR = 1000 #Pids for system/kernel level processes
+ALLOW_ROOT = False   # flip to True to override the root-owned protection
+LOG_FILE = "actions.log"
+
+
+def log_action(message):
+    with open(LOG_FILE, "a") as log:
+        log.write(f"{datetime.now()} -> {message}\n")
+
+
 def stop_process(pid, comm):
+    if pid < PID_FLOOR or pid == os.getpid():
+        log_action(f"{comm}:{pid} SKIPPED (protected PID)")
+        return False
+
     try:
+        owner_uid = os.stat(f"/proc/{pid}").st_uid
+        if owner_uid == 0 and not ALLOW_ROOT:
+            log_action(f"{comm}:{pid} SKIPPED (root-owned)")
+            return False
+
         os.kill(pid, signal.SIGSTOP)
         print(f"[ALERT!]\n Process: {comm}\n PID: {pid}\n Action: SIGSTOP (Process stopped!)")
+        log_action(f"{comm}:{pid} stopped (SIGSTOP)")
         return True
+
     except PermissionError:
-        print(f"Process: {comm}\n PID: {pid}\n Action: SKIPPED (not permitted, owned by another user or protected)")
-    except ProcessLookupError:
+        print(f"Process: {comm}\n PID: {pid}\n Action: SKIPPED (not permitted)")
+        log_action(f"{comm}:{pid} SKIPPED (permission denied)")
+    except (ProcessLookupError, FileNotFoundError):
         print(f"Process: {comm}\n PID: {pid}\n Action: SKIPPED (already exited)")
+        log_action(f"{comm}:{pid} SKIPPED (already exited)")
     return False
+
 
 
 def main():
@@ -102,6 +127,7 @@ def main():
             if now - last >= COOLDOWN_SECONDS:
                 last_alert[pid] = now
                 breakdown = event_breakdown(pid)
+
                 stop_process(pid, comm)
                # print(
                #     f"[ALERT] pid={pid} comm={comm} score={score} "
