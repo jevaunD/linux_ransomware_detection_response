@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """
-create_files.py
 
 Creates a directory of realistic target files and then exits. 
 
@@ -39,6 +38,6 @@ if __name__ == "__main__":
     target_dir = make_target_dir(directory, file_count)
     print(f"[create_files.py] created {file_count} target files in: {target_dir}", file=sys.stderr)
 
-    # Prints just the path on the final stdout line, so this composes with:
-    #   export TARGET_DIR=$(python3 create_files.py | tail -1)
+    # Prints just the path on the final stdout line, you know, just a little reminder haha:
+    #   default if no directory was provided -> export TARGET_DIR=$(python3 create_files.py | tail -1)
     print(target_dir)
