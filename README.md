@@ -24,7 +24,7 @@ warning above: sandbox only.
 
 ## See it in action
 
-[![Demo video](path/to/thumbnail.png)](link-to-2-minute-video)
+[![Demo video](multimedia/file created in harness dir.png)]()
 
 *2-minute walkthrough: what it does, what it looks like when it fires, and
 how to undo it.*
