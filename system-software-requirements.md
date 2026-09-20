@@ -2,7 +2,7 @@
 
 This document covers the environment, dependencies, and functional scope for the
 bpftrace-based ransomware detection prototype (`ransomware_trace.bt`, `respond.py`,
-`setup_targets.py`, `ransomware_sim.py`).
+`create_files.py`, `ransomware_sim.py`, `rans.sh`).
 
 ## System Requirements
 
