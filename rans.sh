@@ -3,7 +3,7 @@
 
 set -uo pipefail
 
-TARGET_DIR="/home/jevaun/harness_dir"
+TARGET_DIR="<<<ENTER TARGET DIRECTORY>>>"
 LOCKED_SUFFIX=".locked"
 
 if [[ ! -d "$TARGET_DIR" ]]; then
@@ -39,4 +39,4 @@ for f in "$TARGET_DIR"/**/*; do
     file_count=$((file_count + 1))
 done
 
-echo "[ransomware_sim.sh] done -- processed $file_count files" >&2
+echo "[rans.sh] done -- processed $file_count files" >&2
