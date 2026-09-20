@@ -7,11 +7,11 @@ TARGET_DIR="<<<ENTER TARGET DIRECTORY>>>"
 LOCKED_SUFFIX=".locked"
 
 if [[ ! -d "$TARGET_DIR" ]]; then
-    echo "[ransomware_sim.sh] target directory not found: $TARGET_DIR" >&2
+    echo "[rans.sh] target directory not found: $TARGET_DIR" >&2
     exit 1
 fi
 
-echo "[ransomware_sim.sh] pid=$$ scanning $TARGET_DIR" >&2
+echo "[rans.sh] pid=$$ scanning $TARGET_DIR" >&2
 
 shopt -s globstar nullglob
 file_count=0
