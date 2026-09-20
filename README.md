@@ -63,6 +63,20 @@ sudo pacman -S bpftrace
 
 # Verify installation
 bpftrace --version
+
+#create test target files
+
+ python3 create_files.py <<target_directory>> <<number of files>>
+
+# Start monitoring and response program
+sudo ./ransomware_trace.bt | python3 respond.py
+
+#Run ransomware simulation program (ransomware_sim.py or rans.sh)
+
+python3 ransomware_sim.py
+OR
+bash rans.sh
+
 ```
 
 **Requirements:** Linux, Python 3.[x]+, bpftrace.
@@ -72,7 +86,7 @@ bpftrace --version
 | Setting      | Default       | What it does                               |
 |--------------|---------------|--------------------------------------------|
 | `PID_FLOOR`  | `1000`        | PIDs below this are never touched          |
-| `ALLOW_ROOT` | `False`       | Set `True` to allow acting on root's stuff |
+| `ALLOW_ROOT` | `False`       | Set `True` to allow acting on root process |
 | `LOG_FILE`   | `actions.log` | Where decisions get logged                 |
 
 ## Oops, it stopped something I need
