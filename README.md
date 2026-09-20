@@ -8,6 +8,20 @@ bring it right back.
 > There's no dry-run mode. Try it in a VM or test box, not on a machine you
 > depend on.
 
+## Why this exists
+
+Built this to scratch a mental itch, honestly. It's an educational project,
+not a product. Fair warning: it includes ransomware-like code (Python and
+Bash) that does file encryption via XOR. The encryption type is simple, but functionally the
+same category of behavior. It's in here so the detector/response side has
+something realistic to catch and react to, not because I'm trying to hand
+anyone a working ransomware kit.
+
+Don't run the encryption code against anything you care about, and don't
+point it at a shared or production machine. Same rules as the SIGSTOP
+warning above: sandbox only.
+
+
 ## See it in action
 
 [![Demo video](path/to/thumbnail.png)](link-to-2-minute-video)
