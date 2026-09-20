@@ -49,18 +49,42 @@ bpftrace-based ransomware detection prototype (`ransomware_trace.bt`, `respond.p
 - Suppress repeat alerts on the same PID via a cooldown period
 - Filter out known-noisy benign processes via a `comm`-pattern denylist
 
-### Response (`respond.py`)
-- Support a dry-run mode that logs intended actions without executing them
-- Refuse to act on PIDs below a configurable floor (protects core/system PIDs)
-- Refuse to act on root-owned processes unless explicitly overridden
-- Support both a reversible action (`SIGSTOP`) and a destructive one (`SIGKILL`),
-  configurable
-- Log every response decision, including skipped/refused actions, for auditability
+### Response Actions
 
-### Testing (`setup_targets.py` + `ransomware_sim.py`)
+- Respond to flagged processes by sending `SIGSTOP`, which pauses the process
+  without terminating it. The action is fully reversible.
+- Refuse to act on PIDs below a configurable floor (`PID_FLOOR`, default 1000)
+  to protect core/system processes.
+- Refuse to act on its own PID, so the program can never freeze itself.
+- Refuse to act on root-owned processes unless explicitly overridden
+  (`ALLOW_ROOT = True`).
+- Log every response decision to `actions.log`, including skipped/refused
+  actions. Each entry includes a timestamp, process name, PID, and outcome
+  (stopped, or skipped with the reason: protected PID, root-owned,
+  permission denied, already exited).
+
+### Recovering a Stopped Process
+
+If a legitimate program gets paused by `respond.py`, resume it with `SIGCONT`.
+It picks up exactly where it left off.
+
+1. Find the PID and name in `actions.log`, or list paused processes
+   (state `T`):
+
+       ps -eo pid,stat,comm | awk '$2 ~ /^T/'
+
+2. Resume it:
+
+       kill -CONT <pid>
+
+   Or by name:
+
+       pkill -CONT <process_name>
+
+### Testing (`create_files.py` + `ransomware_sim.py`)
 - Target file creation must be a separate process/step from the simulated attack
-- Simulated attack must discover targets dynamically (via environment variable +
-  directory walk), not via hardcoded filenames
+- Simulated attack can discover targets dynamically (via environment variable +
+  directory walk), or via hardcoded filenames
 - Must support both a "malicious" (rapid, bulk) and realistic file-mix scenario for
   validating true positives without relying on a single combined harness
 
@@ -71,12 +95,13 @@ bpftrace-based ransomware detection prototype (`ransomware_trace.bt`, `respond.p
 - **Tunability:** window size, score threshold, weights, and denylist must be easy to
   adjust without code restructuring (currently config constants at the top of
   `respond.py`)
-- **Safety-first defaults:** any destructive response action must default to
-  off/dry-run; opting into real signaling should be a deliberate configuration
-  change, not the default behavior
-- **Portability path:** scoring/response logic should be structured so it can later
-  be ported from consuming bpftrace's stdout to consuming events from a Go/Cilium
-  eBPF pipeline, without rewriting the detection logic itself
+- **Use in a safe environment only:** `respond.py` sends real `SIGSTOP`
+  signals by default, with no dry-run mode and no confirmation prompt. Run it
+  only in an environment that is safe to experiment in (a VM, container, or
+  test machine), not on a production or daily-driver system. Stopped processes
+  can be resumed with `SIGCONT` (see *Recovering a Stopped Process*), but a
+  paused legitimate program can still cause disruption in the meantime.
+
 
 ## Known Gaps
 
