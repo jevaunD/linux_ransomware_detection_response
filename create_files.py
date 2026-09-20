@@ -10,7 +10,7 @@ Usage:
 If no directory is given, a fresh temp directory is created and its
 path is printed. You can export it for ransomware_sim.py to pick up:
 
-    export TARGET_DIR=$(python3 setup_targets.py | tail -1)
+    export TARGET_DIR=$(python3 create_files.py | tail -1)
 """
 
 import os
