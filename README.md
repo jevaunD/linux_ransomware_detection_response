@@ -66,7 +66,7 @@ bpftrace --version
 
 #create test target files
 
- python3 create_files.py <<target_directory>> <<number of files>>
+python3 create_files.py <<target_directory>> <<number of files>>
 
 # Start monitoring and response program
 sudo ./ransomware_trace.bt | python3 respond.py
