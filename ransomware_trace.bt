@@ -1,7 +1,6 @@
 #!/usr/bin/env bpftrace
-/*
- *
- * Traces file open (write-relevant), rename, and delete syscalls
+
+/* Traces file open (write-relevant), rename, and delete syscalls
  * system-wide and emits one CSV line per event to stdout:
  *
  *  Output: EVENT_TYPE,PID,COMM,PATH,TIMESTAMP_NS
