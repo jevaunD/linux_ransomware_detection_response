@@ -1,4 +1,4 @@
-# Requirements — Linux Ransomware Behavior Detector (bpftrace prototype)
+# Requirements (Linux Ransomware Detection & Response (bpftrace prototype)
 
 This document covers the environment, dependencies, and functional scope for the
 bpftrace-based ransomware detection prototype (`ransomware_trace.bt`, `respond.py`,
