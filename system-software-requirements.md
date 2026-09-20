@@ -105,10 +105,20 @@ It picks up exactly where it left off.
 
 ## Known Gaps
 
-- No persistent storage/logging to disk yet (all output is stdout — no historical
+- No persistent storage/logging to disk yet (all output is stdout. So, no historical
   record survives a restart)
 - No distinct-file-diversity signal yet (a process rewriting the same file
   repeatedly scores identically to one touching many different files)
 - Single-window scoring only; no longer-term behavioral baseline per process
 - No test coverage for `write` syscalls directly (currently inferred only from
   `openat` flags, not from actual write volume/size)
+
+
+  - **False positives are possible.** Detection is based on behavior (rapid
+  file activity), not on knowing what a program actually is, so a legit
+  program that acts like ransomware can get flagged. For example, running
+  `create_files.py` while the tracer is active will trigger it and freeze
+  the script mid-execution. Nothing is lost, since the process is only
+  paused (see *Recovering a Stopped Process*), but expect the occasional
+  legit program to get caught. Run it in a safe environment, and generate
+  your test files *before* starting the tracer.
