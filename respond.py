@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 """
-
-respond.py
-
 Reads CSV event lines from bpftrace (via stdin) in the form:
     EVENT_TYPE,PID,COMM,PATH,TIMESTAMP_NS
 
