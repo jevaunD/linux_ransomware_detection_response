@@ -1,33 +1,5 @@
 #!/usr/bin/env bash
-#
-# ransomware_sim.sh
-#
-# Bash port of ransomware_sim.py -- tests whether the detector also
-# catches non-Python attacker tooling. Discovers targets via
-# RANSOMWARE_TARGET_DIR (falls back to $HOME) and modifies each
-# file's content in place.
-#
-# IMPORTANT DESIGN NOTE:
-# The read (`$(<"$f")`) and the write (`> "$f"`) below use bash's OWN
-# file descriptors via redirection -- no subprocess is forked for
-# those, so those OPEN events are attributed to THIS script's PID
-# ($$), the same way os.rename()/open() in the Python version stayed
-# in one process.
-#
-# The final rename step, however, has no bash builtin equivalent --
-# it shells out to `mv`, which forks a brand-new, short-lived process
-# per file. That RENAME event lands on a DIFFERENT pid than this
-# script's own OPEN events.
-#
-# This is a genuinely useful test case: it demonstrates that a
-# per-PID aggregation detector can be blind to attacker code that
-# forks a new process per file operation (very common in real
-# script-based malware/loaders that shell out to openssl, mv, etc.
-# per file). Expect this run to be detected mostly (or only) via the
-# OPEN volume on this script's own PID -- if the OPEN weight/threshold
-# alone isn't enough to cross THRESHOLD in respond.py, this run may
-# slip through entirely, which is worth documenting as a discovered
-# detection gap.
+
 
 set -uo pipefail
 
