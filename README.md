@@ -121,7 +121,29 @@ Every action gets a timestamped line, whether it stopped something or skipped it
 Full details are in [`system-software-requirements.md`](system-software-requirements.md).
 
 
-Issues and PRs welcome!
+## False positives are possible as it not extensively tested!
+
+Detection is based on behavior (rapid file activity), not on knowing what a program
+  actually is, so a legit program that acts like ransomware can get flagged.
+  For example, running `create_files.py` while the tracer is active will
+  trigger it and freeze the script mid-execution. I haven't done extensive
+  testing on what else it might catch. Antivirus scanners, backup tools, file
+  sync clients, and archivers are all likely suspects. Nothing is lost when
+  this happens, since the process is only paused (see *Recovering a Stopped
+  Process*), but expect the occasional legit program to get caught. Run it in
+  a safe environment.
+
+## Help me test it
+
+Tried it alongside an antivirus, backup tool, or something else that touches
+a lot of files?? I'd love to hear what happened. If it flagged something it
+shouldn't have (or missed something it should have caught), open an issue with:
+
+- The program that got flagged
+- What it was doing at the time
+- The relevant lines from `actions.log`
+
+Every false positive report helps make the detection better!
 
 ## License
 
