@@ -138,7 +138,7 @@ Detection is based on behavior (rapid file activity), not on knowing what a prog
 ## Help me test it
 
 Tried it alongside an antivirus, backup tool, or something else that touches
-a lot of files?? I'd love to hear what happened. If it flagged something it
+a lot of files?? You can try putting the process name in the list "COMM_DENYLIST_PATTERNS" found in `respond.py.` I'd love to hear what happened after. If it flagged something it
 shouldn't have (or missed something it should have caught), open an issue with:
 
 - The program that got flagged
