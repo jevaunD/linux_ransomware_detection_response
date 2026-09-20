@@ -81,7 +81,7 @@ bash rans.sh
 
 **Requirements:** Linux, Python 3.[x]+, bpftrace.
 
-## Config
+## Some Configs
 
 | Setting      | Default       | What it does                               |
 |--------------|---------------|--------------------------------------------|
@@ -115,7 +115,7 @@ Every action gets a timestamped line, whether it stopped something or skipped it
 
 ## Docs
 
-Full details are in [`system-software-requirements.md`](./linux_ransomware_detection_response/system-software-requirements.md).
+Full details are in [`system-software-requirements.md`](system-software-requirements.md).
 
 
 Issues and PRs welcome!
