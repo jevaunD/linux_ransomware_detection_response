@@ -6,10 +6,12 @@ respond.py
 Reads CSV event lines from bpftrace (via stdin) in the form:
     EVENT_TYPE,PID,COMM,PATH,TIMESTAMP_NS
 
-Aggregates events per-PID over a sliding time window and raises an
+Aggregates events per PID over a sliding time window (adjustable) and raises an
 alert when a process's weighted event score crosses a threshold in
-that window -- the classic ransomware signature of "many file
-open/rename/delete operations in rapid succession."
+that window.
+
+The classic ransomware signature of "many file
+open -> rename -> delete operations in rapid succession."
 
 Usage:
     sudo bpftrace ransomware_trace.bt | python3 score.py
@@ -20,7 +22,7 @@ import sys
 import time
 from collections import defaultdict, deque
 
-# --- Tunable parameters (start here when iterating) ---------------------
+# --- Adjustable parameters ---------------------
 WINDOW_SECONDS = 5          # sliding window size
 THRESHOLD = 50               # weighted score that triggers an alert
 WEIGHTS = {                  # rename/delete are stronger ransomware signals
@@ -28,7 +30,7 @@ WEIGHTS = {                  # rename/delete are stronger ransomware signals
     "RENAME": 4,
     "DELETE": 4,
 }
-COOLDOWN_SECONDS = 10         # don't re-alert on the same pid immediately
+COOLDOWN_SECONDS = 10         # don't send alert on the same pid immediately
 # --------------------------------------------------------------------
 
 # pid -> deque of (timestamp, weight, event_type)
@@ -39,12 +41,13 @@ last_alert = {}
 COMM_DENYLIST_PATTERNS = [
 
 	"gnome-shel", "flameshot","Xorg","systemd", "system76-schedu",
-	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", "MemoryInfra", "Cache2 I/O", "ThreadPoolForeg"  
+	"chrome", "brave", "firefox", "Xwayland", "hostnamed", "nautilus", "MemoryInfra", "Cache2 I/O", "ThreadPoolForeg", "CompositorTileW", "Chrome_IOThread",  
 ]
 
 #This gets rid of the false positives as some processes manipulate many files just as how ransomware does.
 def is_denylisted(comm):
 	return any(pattern in comm for pattern in COMM_DENYLIST_PATTERNS)
+
 
 def prune_and_score(pid, now):
     dq = events_by_pid[pid]
@@ -59,8 +62,20 @@ def event_breakdown(pid):
         counts[etype] += 1
     return dict(counts)
 
+def stop_process(pid, comm):
+    try:
+        os.kill(pid, signal.SIGSTOP)
+        print(f"[ALERT!]\n Process: {comm}\n PID: {pid}\n Action: SIGSTOP (Process stopped!)")
+        return True
+    except PermissionError:
+        print(f"Process: {comm}\n PID: {pid}\n Action: SKIPPED (not permitted, owned by another user or protected)")
+    except ProcessLookupError:
+        print(f"Process: {comm}\n PID: {pid}\n Action: SKIPPED (already exited)")
+    return False
+
 
 def main():
+
     for raw_line in sys.stdin:
         line = raw_line.strip()
         if not line or line.startswith("EVENT,PID"):
@@ -87,12 +102,13 @@ def main():
             if now - last >= COOLDOWN_SECONDS:
                 last_alert[pid] = now
                 breakdown = event_breakdown(pid)
-                print(
-                    f"[ALERT] pid={pid} comm={comm} score={score} "
-                    f"events_in_window={count} breakdown={breakdown} "
-                    f"last_path={path}",
-                    flush=True,
-                )
+                stop_process(pid, comm)
+               # print(
+               #     f"[ALERT] pid={pid} comm={comm} score={score} "
+               #     f"events_in_window={count} breakdown={breakdown} "
+               #     f"last_path={path}",
+               #     flush=True,
+               # )
  
  
 if __name__ == "__main__":
