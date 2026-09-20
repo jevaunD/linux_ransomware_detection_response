@@ -68,7 +68,7 @@ bpftrace --version
 
 python3 create_files.py <<target_directory>> <<number of files>>
 
-# Start monitoring and response program
+#Start the monitoring and response program
 sudo ./ransomware_trace.bt | python3 respond.py
 
 #Run ransomware simulation program (ransomware_sim.py or rans.sh)
