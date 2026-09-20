@@ -1,8 +1,8 @@
-# [linux_ransomware_detection_response]
+# linux_ransomware_detection_response
 
-Catches suspicious processes on Linux and freezes them before they do damage.
-Nothing gets killed, just paused, so if it stops something legit, you can
-bring it right back.
+Detects processes showing signs of ransomware-like behavior on Linux and
+freezes them before they can do further damage. Nothing gets killed permanently, just paused.
+So, if it stops something legit, you can bring it right back!
 
 > **Warning:** This tool stops processes for real, and it does so by default.
 > There's no dry-run mode. Try it in a VM or test box, not on a machine you
