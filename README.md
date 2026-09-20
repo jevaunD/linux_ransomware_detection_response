@@ -24,37 +24,48 @@ warning above: sandbox only.
 
 ## See it in action
 
-[![Demo video](./multimedia/file_created_in_harness_dir.png)](./multimedia/linux-ransomware-resp(edited).mp4)
+[![Screenshot](./multimedia/file_created_in_harness_dir.png)
 
-*2-minute walkthrough: what it does, what it looks like when it fires, and
-how to undo it.*
+* There's a 2-minute walkthrough video in the multimedia directory. It will show what it does and what it looks like when it fires.
 
+  
 ## What it does
 
 - Watches for [what gets flagged: suspicious behavior, specific processes, etc.]
 - Sends `SIGSTOP` to pause the flagged process (fully reversible)
 - Logs every decision to `actions.log`, including the ones it skipped
 
-![Alert example](screenshots/alert.png)
+![Alert example](./multimedia/alert_triggered.png)
 
 ## Built-in safety rails
 
 It won't touch:
 
-- **Low PIDs** (below `PID_FLOOR`, default 1000), so core system stuff is safe
+- **Low PIDs** (below `PID_FLOOR` [respond.py], default 1000), so core system stuff is safe
 - **Itself**, so it can't freeze its own process
 - **Root-owned processes**, unless you flip `ALLOW_ROOT = True`
 
 ## Getting started
 
 ```bash
-git clone https://github.com/jevaunD/[repo-name].git
-cd [repo-name]
-[install command, if any]
-[run command]
+git clone https://github.com/jevaunD/linux_ransomware_detection_response.git
+cd linux_ransomware_detection_response
+
+# Ubuntu / Debian
+sudo apt update
+sudo apt install bpftrace
+
+# Fedora
+sudo dnf install bpftrace
+
+# Arch
+sudo pacman -S bpftrace
+
+# Verify installation
+bpftrace --version
 ```
 
-**Requirements:** Linux, Python 3.[x]+, [anything else]
+**Requirements:** Linux, Python 3.[x]+, bpftrace.
 
 ## Config
 
@@ -78,7 +89,6 @@ No panic. Paused processes pick up exactly where they left off.
 ```
    Or by name: `pkill -CONT <process_name>`
 
-![Recovery example](screenshots/recovery.png)
 
 ## The log
 
@@ -91,12 +101,17 @@ Every action gets a timestamped line, whether it stopped something or skipped it
 
 ## Docs
 
-Full details are in [`[requirements-file].md`]([path]).
+Full details are in [`system-software-requirements.md`](./linux_ransomware_detection_response/system-software-requirements.md).
 
-## Contributing
 
-Issues and PRs welcome. [Add anything you want here.]
+Issues and PRs welcome!
 
 ## License
 
-[License]
+MIT License
+
+Copyright (c) 2026 Jevaun Smith
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files...
+
+Built with curiosity. Maintained with feedback.
