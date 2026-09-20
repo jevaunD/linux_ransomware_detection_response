@@ -14,7 +14,7 @@ import sys
 # to whatever machine it lands on. There's an option to do that here (It's commented): check a
 # dedicated test variable first, then fall back to $HOME the way an
 # actual sample targeting user documents might.
-TARGET_DIR =  "/home/jevaun/harness_dir"     #os.environ.get("TARGET_DIR") or os.environ.get("HOME")
+TARGET_DIR =  "<<<ENTER TARGET DIRECTORY>>>"     #os.environ.get("TARGET_DIR") or os.environ.get("HOME")
 
 LOCKED_SUFFIX = ".locked"
 XOR_KEY = 0xAA
@@ -49,7 +49,7 @@ def main():
         print(
             "[ransomware_sim] No valid target directory found. Set "
             "TARGET_DIR to a directory created by "
-            "setup_targets.py before running this.",
+            "create_files.py before running this.",
             file=sys.stderr,
         )
         sys.exit(1)
